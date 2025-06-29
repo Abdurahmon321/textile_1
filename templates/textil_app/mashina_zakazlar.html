@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+{% block title %}Mashina Zakazlar - Textil Boshqaruvi{% endblock %}
+
+{% block content %}
+<div style="width:100vw; position:relative; left:50%; transform:translateX(-50%); margin:0; padding:0 10px;">
+    <div class="card mb-4 border-0" style="box-shadow:none; width:calc(100vw - 20px); max-width:calc(100vw - 20px); margin:0; padding:0;">
+        <div class="card-header border-0" style="background:none;">
+            <h4 class="mb-0">
+                <i class="fas fa-th-list me-2"></i>Mashinalar bo'yicha zakazlar
+            </h4>
+        </div>
+        <div class="d-flex justify-content-end mb-2" style="width:100%;">
+            <a href="{% url 'mashina_zakazlar_excel' %}" class="btn btn-outline-primary me-2">
+                <i class="fas fa-file-excel"></i> Excel (matritsa) yuklab olish
+            </a>
+            <button class="btn btn-outline-danger" id="download-pdf-btn">
+                <i class="fas fa-file-pdf"></i> To'liq jadval (PDF) yuklab olish
+            </button>
+        </div>
+        <div class="card-body p-0 pdf-area">
+            <table class="batch-table table-bordered text-center align-middle" style="width:calc(100vw - 20px); max-width:calc(100vw - 20px);">
+                <thead>
+                    <tr>
+                        {% for mashina in mashinalar %}
+                            <th class="bg-success text-white">
+                                <div style="font-size:12px; font-weight:bold;">
+                                    {{ mashina.nomi|default:mashina.raqami }}
+                                </div>
+                                {% for stat in mashina_stats %}
+                                    {% if stat.raqami == mashina.raqami %}
+                                        <div style="margin-top:2px;">
+                                            <span style="display:inline-block; background:#1976d2; color:#fff; border-radius:6px; font-size:11px; padding:2px 8px; margin-bottom:2px;">
+                                                <i class="fas fa-list"></i> {{ stat.zakaz_soni }} ta zakaz
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <span style="display:inline-block; background:#388e3c; color:#fff; border-radius:6px; font-size:11px; padding:2px 8px;">
+                                                <i class="fas fa-balance-scale"></i> {{ stat.umumiy_kg }} kg
+                                            </span>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row_materials in materials_matrix %}
+                    <tr>
+                        {% for material in row_materials %}
+                            <td class="p-1 align-top">
+                              {% if material %}
+                                <div class="batch-cell-content-modern
+                                    {% if material.status == 'progress' and material.is_late %}cell-progress-late
+                                    {% elif material.status == 'progress' %}cell-progress
+                                    {% elif material.status == 'completed' %}cell-completed
+                                    {% else %}cell-waiting
+                                    {% endif %}">
+                                  <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="badge bg-secondary">#{{ material.partiya_raqami }}</span>
+                                    <form method="post" action="{% url 'material_quick_status' material.pk %}" class="d-inline material-status-form">
+                                      {% csrf_token %}
+                                      <input type="hidden" name="next" value="mashina_zakazlar">
+                                      <select name="status" class="form-select form-select-sm d-inline w-auto material-status-select custom-status-select no-arrow-select status-{{ material.status }}" onchange="this.form.submit()">
+                                        <option value="waiting" {% if material.status == 'waiting' %}selected{% endif %}>Kutish</option>
+                                        <option value="progress" {% if material.status == 'progress' %}selected{% endif %}>Jarayonda</option>
+                                        <option value="completed" {% if material.status == 'completed' %}selected{% endif %}>Tugatilgan</option>
+                                      </select>
+                                    </form>
+                                  </div>
+                                  <div class="mb-1"><strong>Buyurtmachi:</strong> <span class="text-dark">{{ material.buyurtmachi }}</span></div>
+                                  <div class="mb-1"><strong>Material:</strong> <span class="text-dark">{{ material.material_turi }}</span></div>
+                                  <div class="mb-1"><strong>Rang:</strong> <span class="text-dark">{{ material.material_rangi }}</span></div>
+                                  <div class="mb-1"><strong>Gramaj:</strong> <span class="badge bg-info text-dark">{{ material.material_gramaji_ko_rsatish.split.0 }} {{ material.material_gramaji_ko_rsatish.split|last|slice:"1:-1" }}</span></div>
+                                  <div class="mb-1"><strong>Kg:</strong> <span class="badge bg-dark-subtle text-dark">{{ material.kilogramm }} kg</span></div>
+                                  <div class="mb-1"><strong>Vaqt:</strong> <span class="text-muted">{{ material.kiritilgan_vaqt|date:'d.m.Y H:i' }}</span></div>
+                                </div>
+                              {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+.card.mb-4.border-0 {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: calc(100vw - 20px) !important;
+    max-width: calc(100vw - 20px) !important;
+    box-shadow: none !important;
+}
+.batch-table {
+    table-layout: auto;
+    width: calc(100vw - 20px) !important;
+    max-width: calc(100vw - 20px) !important;
+    border-collapse: collapse;
+    font-size: 10px !important;
+    background: #fff;
+}
+.batch-table th, .batch-table td {
+    min-width: unset;
+    max-width: 120px;
+    word-break: break-word;
+    font-size: 10px !important;
+    padding: 2px 2px !important;
+}
+.batch-table th {
+    background: #388e3c !important;
+    color: #fff !important;
+    font-weight: bold;
+    font-size: 11px !important;
+    text-align: center;
+    padding: 3px 2px !important;
+}
+.batch-cell-content-modern {
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    padding: 3px 4px !important;
+    margin: 1px 0;
+    font-size: 10px !important;
+    min-height: 60px;
+    white-space: normal;
+    background: #fff;
+    color: #222;
+    transition: background 0.2s, color 0.2s;
+}
+.cell-progress-late {
+    background: #ffcdd2 !important;
+    color: #222 !important;
+    border: 2px solid #d32f2f;
+}
+.cell-progress {
+    background: #c8e6c9 !important;
+    color: #222 !important;
+}
+.cell-completed {
+    background: #ffcdd2 !important;
+    color: #222 !important;
+}
+.cell-waiting {
+    background: #f8fafc !important;
+    color: #222 !important;
+}
+.batch-cell-content-modern .badge {
+    font-size: 12px;
+    padding: 0.2em 0.6em;
+    border-radius: 0.5em;
+}
+.batch-cell-content-modern .mb-1 {
+    margin-bottom: 0.25rem !important;
+}
+.bg-success {
+    background: #c8e6c9 !important;
+    color: #222 !important;
+}
+.bg-danger {
+    background: #ffcdd2 !important;
+    color: #222 !important;
+}
+.bg-warning {
+    background: #fff9c4 !important;
+    color: #222 !important;
+}
+.form-select.form-select-sm.material-status-select,
+.material-status-select {
+    font-size: 10px !important;
+    height: 22px !important;
+    padding: 1px 6px !important;
+    min-width: 70px !important;
+    max-width: 100px;
+    line-height: 1.1 !important;
+}
+.no-arrow-select {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background: #f8f9fa !important;
+    border: 2px solid #1976d2 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 1px 4px rgba(25, 118, 210, 0.07);
+    padding-right: 12px !important;
+    font-weight: 600;
+    color: #1976d2 !important;
+    cursor: pointer;
+    background-image: none !important;
+}
+.no-arrow-select:focus {
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 2px #0d6efd33 !important;
+    background: #fff !important;
+}
+.status-waiting.no-arrow-select {
+    background: #f8f9fa !important;
+    color: #333 !important;
+    border-color: #b3b3b3 !important;
+}
+.status-progress.no-arrow-select {
+    background: #d1e7dd !important;
+    color: #146c43 !important;
+    border-color: #badbcc !important;
+}
+.status-completed.no-arrow-select {
+    background: #f8d7da !important;
+    color: #842029 !important;
+    border-color: #f5c2c7 !important;
+}
+@media print {
+    body * {
+        visibility: hidden !important;
+    }
+    .print-area, .print-area * {
+        visibility: visible !important;
+    }
+    .print-area {
+        position: absolute;
+        left: 0; top: 0; width: 100vw;
+        background: #fff;
+        box-shadow: none !important;
+    }
+    .btn, .card-header, .card.mb-4.border-0:not(.print-area) {
+        display: none !important;
+    }
+}
+</style>
+
+<script>
+document.querySelectorAll('.material-status-select').forEach(function(sel) {
+    sel.addEventListener('change', function() {
+        this.form.submit();
+    });
+});
+
+function adjustTableFont() {
+    const table = document.querySelector('.batch-table');
+    if (!table) return;
+    const ths = table.querySelectorAll('th');
+    const colCount = ths.length;
+    // Ekran o'lchami va ustunlar soniga qarab font-size va paddingni aniqlash
+    let fontSize = 10;
+    let padding = 2;
+    if (colCount > 8) {
+        fontSize = 9;
+        padding = 1.5;
+    }
+    if (colCount > 12) {
+        fontSize = 8;
+        padding = 1;
+    }
+    if (colCount > 16) {
+        fontSize = 7;
+        padding = 0.5;
+    }
+    // Minimal fontSize 7px
+    if (fontSize < 7) fontSize = 7;
+    table.classList.add('dynamic-font');
+    table.style.setProperty('--dynamic-font-size', fontSize + 'px');
+    table.style.setProperty('--dynamic-padding', padding + 'px');
+    // Ichki kataklar uchun ham
+    document.querySelectorAll('.batch-cell-content-modern').forEach(function(cell) {
+        cell.classList.add('dynamic-font');
+        cell.style.setProperty('--dynamic-font-size', fontSize + 'px');
+        cell.style.setProperty('--dynamic-padding', padding + 'px');
+    });
+}
+window.addEventListener('DOMContentLoaded', adjustTableFont);
+window.addEventListener('resize', adjustTableFont);
+</script>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+document.getElementById('download-pdf-btn').addEventListener('click', function() {
+    const table = document.querySelector('.pdf-area');
+    html2canvas(table, {scale:2}).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new window.jspdf.jsPDF({
+            orientation: 'landscape',
+            unit: 'px',
+            format: [canvas.width, canvas.height]
+        });
+        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+        pdf.save('mashina_zakazlar_jadvali.pdf');
+    });
+});
+</script>
+{% endblock %} 

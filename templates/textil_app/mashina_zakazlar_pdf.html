@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Mashinalar bo'yicha zakazlar (PDF)</title>
+    <style>
+        body {
+            font-family: DejaVu Sans, Arial, sans-serif;
+            font-size: 12px;
+            background: #fff;
+        }
+        .batch-table {
+            table-layout: fixed;
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            background: #fff;
+        }
+        .batch-table th, .batch-table td {
+            border: 1.5px solid #888;
+            padding: 4px 4px;
+            vertical-align: top;
+            min-width: 60px;
+            word-break: break-word;
+            background: #f8fafc;
+        }
+        .batch-table th {
+            background: #388e3c;
+            color: #fff;
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+        }
+        .batch-cell-content-modern {
+            border-radius: 10px;
+            box-shadow: none;
+            padding: 6px 8px;
+            margin: 2px 0;
+            font-size: 13px;
+            min-height: 80px;
+            white-space: normal;
+            background: #fff;
+            color: #222;
+        }
+        .cell-progress-late {
+            background: #ffcdd2 !important;
+            color: #222 !important;
+            border: 2px solid #d32f2f;
+        }
+        .cell-progress {
+            background: #c8e6c9 !important;
+            color: #222 !important;
+        }
+        .cell-completed {
+            background: #ffe0b2 !important;
+            color: #222 !important;
+        }
+        .cell-waiting {
+            background: #f8fafc !important;
+            color: #222 !important;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.2em 0.6em;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 0.5em;
+            background: #e0e0e0;
+            color: #222;
+        }
+        .badge.bg-secondary { background: #bdbdbd; color: #222; }
+        .badge.bg-info { background: #4fc3f7; color: #222; }
+        .badge.bg-dark-subtle { background: #b0bec5; color: #222; }
+        .mb-1 { margin-bottom: 0.25rem; }
+        .text-dark { color: #222; }
+        .text-muted { color: #888; }
+        .text-center { text-align: center; }
+        .fw-bold { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h2 class="text-center">Mashinalar bo'yicha zakazlar</h2>
+    <table class="batch-table">
+        <thead>
+            <tr>
+                {% for mashina in mashinalar %}
+                    <th>{{ mashina.nomi|default:mashina.raqami }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row_materials in materials_matrix %}
+            <tr>
+                {% for material in row_materials %}
+                    <td>
+                        {% if material %}
+                        <div class="batch-cell-content-modern
+                            {% if material.status == 'progress' and material.is_late %}cell-progress-late
+                            {% elif material.status == 'progress' %}cell-progress
+                            {% elif material.status == 'completed' %}cell-completed
+                            {% else %}cell-waiting
+                            {% endif %}">
+                            <span class="badge bg-secondary">#{{ material.partiya_raqami }}</span>
+                            <div class="mb-1"><strong>Buyurtmachi:</strong> <span class="text-dark">{{ material.buyurtmachi }}</span></div>
+                            <div class="mb-1"><strong>Material:</strong> <span class="text-dark">{{ material.material_turi }}</span></div>
+                            <div class="mb-1"><strong>Rang:</strong> <span class="text-dark">{{ material.material_rangi }}</span></div>
+                            <div class="mb-1"><strong>Gramaj:</strong> <span class="badge bg-info text-dark">{{ material.material_gramaji_ko_rsatish }}</span></div>
+                            <div class="mb-1"><strong>Kg:</strong> <span class="badge bg-dark-subtle text-dark">{{ material.kilogramm }} kg</span></div>
+                            <div class="mb-1"><strong>Vaqt:</strong> <span class="text-muted">{{ material.kiritilgan_vaqt|date:'d.m.Y H:i' }}</span></div>
+                        </div>
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html> 

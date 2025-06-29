@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}Material nomlari ro'yxati{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h2 class="mb-0"><i class="fas fa-tags me-2"></i>Material nomlari ro'yxati</h2>
+            <a href="{% url 'materialtype_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Yangi Material Nomi
+            </a>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12 col-md-6">
+            <form method="get" class="d-flex">
+                <input type="text" name="search" class="form-control me-2" placeholder="Material nomi..." value="{{ search|default:'' }}">
+                <button type="submit" class="btn btn-outline-secondary"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Material nomi</th>
+                                    <th>Tavsif</th>
+                                    <th>Narxi (so'm)</th>
+                                    <th>Faol</th>
+                                    <th>Qo'shilgan</th>
+                                    <th>Amallar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for materialtype in materialtypes %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td><span class="badge bg-dark" style="font-size:1rem;">{{ materialtype.nomi }}</span></td>
+                                    <td>{{ materialtype.tavsif|default:'-' }}</td>
+                                    <td>{{ materialtype.narxi|floatformat:2 }}</td>
+                                    <td>
+                                        {% if materialtype.faol %}
+                                            <span class="badge bg-success">Faol</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Faol emas</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ materialtype.qo_shilgan_vaqt|date:"d.m.Y H:i" }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'materialtype_update' materialtype.pk %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></a>
+                                            <a href="{% url 'materialtype_delete' materialtype.pk %}" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted">
+                                        <i class="fas fa-info-circle me-2"></i>Hali material nomlari yo'q
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

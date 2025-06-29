@@ -1,0 +1,503 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Panel - Textil Boshqaruvi{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0 modern-title">
+                    <i class="fas fa-cogs me-2"></i>Admin Panel
+                </h1>
+                <div>
+                    <a href="{% url 'tikuv_mashina_create' %}" class="btn gradient-btn me-2">
+                        <i class="fas fa-cogs me-2"></i>Yangi Mashina
+                    </a>
+                    <a href="{% url 'user_create' %}" class="btn gradient-btn-blue">
+                        <i class="fas fa-user-plus me-2"></i>Yangi Foydalanuvchi
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistika -->
+    <div class="row mb-4 g-3">
+        <div class="col-md-4 col-lg-3">
+            <a href="{% url 'user_list' %}" class="stat-card-link">
+                <div class="stat-card stat-card-users">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-card-value">{{ total_users }}</div>
+                            <div class="stat-card-label">Jami Foydalanuvchilar</div>
+                        </div>
+                        <div class="stat-card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4 col-lg-3">
+            <a href="{% url 'material_list' %}" class="stat-card-link">
+                <div class="stat-card stat-card-materials">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-card-value">{{ total_materials }}</div>
+                            <div class="stat-card-label">Jami Materiallar</div>
+                        </div>
+                        <div class="stat-card-icon">
+                            <i class="fas fa-boxes"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4 col-lg-3">
+            <a href="{% url 'tikuv_mashina_list' %}" class="stat-card-link">
+                <div class="stat-card stat-card-machines">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-card-value">{{ total_tikuv_mashinalar }}</div>
+                            <div class="stat-card-label">Jami To'quv Mashinalari</div>
+                        </div>
+                        <div class="stat-card-icon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Tezkor linklar -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card modern-card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-link me-2"></i>Tezkor Linklar
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'tikuv_mashina_list' %}" class="btn btn-outline-primary w-100 shadow-sm">
+                                <i class="fas fa-cogs me-2"></i>To'quv Mashinalari
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'material_list' %}" class="btn btn-outline-success w-100 shadow-sm">
+                                <i class="fas fa-boxes me-2"></i>Materiallar
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'material_create' %}" class="btn btn-outline-warning w-100 shadow-sm">
+                                <i class="fas fa-plus me-2"></i>Yangi Material
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'user_create' %}" class="btn btn-outline-info w-100 shadow-sm">
+                                <i class="fas fa-user-plus me-2"></i>Yangi Foydalanuvchi
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'color_list' %}" class="btn btn-outline-secondary w-100 shadow-sm">
+                                <i class="fas fa-palette me-2"></i>Ranglar
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'materialtype_list' %}" class="btn btn-outline-dark w-100 shadow-sm">
+                                <i class="fas fa-tags me-2"></i>Material nomlari
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'customer_list' %}" class="btn btn-outline-primary w-100 shadow-sm">
+                                <i class="fas fa-user-tie me-2"></i>Buyurtmachilar
+                            </a>
+                        </div>
+                        {% if user.is_superuser or user.is_admin %}
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'mashina_statistika' %}" class="btn btn-outline-info w-100 shadow-sm">
+                                <i class="fas fa-chart-bar me-2"></i>To'quv Mashinalar Statistikasi
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Foydalanuvchilar ro'yxati -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card modern-card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-users me-2"></i>Foydalanuvchilar Ro'yxati
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover modern-table">
+                            <thead class="sticky-top bg-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Foydalanuvchi nomi</th>
+                                    <th>Ism</th>
+                                    <th>Familiya</th>
+                                    <th>Admin</th>
+                                    <th>Faol</th>
+                                    <th>Ro'yxatdan o'tgan</th>
+                                    <th>Amallar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>
+                                        <strong>{{ user.username }}</strong>
+                                        {% if user.is_superuser %}
+                                            <span class="badge bg-danger ms-1">Superuser</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ user.first_name|default:"-" }}</td>
+                                    <td>{{ user.last_name|default:"-" }}</td>
+                                    <td>
+                                        {% if user.is_admin %}
+                                            <span class="badge bg-success">Ha</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Yo'q</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if user.is_active %}
+                                            <span class="badge bg-success">Faol</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Faol emas</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ user.date_joined|date:"d.m.Y H:i" }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'user_update' user.pk %}" class="btn btn-sm btn-outline-primary shadow-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            {% if user != request.user %}
+                                            <a href="{% url 'user_delete' user.pk %}" class="btn btn-sm btn-outline-danger shadow-sm">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="10" class="text-center text-muted">
+                                        <i class="fas fa-info-circle me-2"></i>Hali foydalanuvchilar yo'q
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- So'nggi materiallar -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-clock me-2"></i>So'nggi Materiallar
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Partiya raqami</th>
+                                    <th>Buyurtmachi</th>
+                                    <th>Material</th>
+                                    <th>Status</th>
+                                    <th>To'quv Mashina</th>
+                                    <th>Vaqt</th>
+                                    <th>Amallar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for material in recent_materials %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'material_detail' material.pk %}" class="text-decoration-none">
+                                            {{ material.partiya_raqami }}
+                                        </a>
+                                    </td>
+                                    <td>{{ material.buyurtmachi }}</td>
+                                    <td>{{ material.material_turi }}</td>
+                                    <td>
+                                        <form method="post" action="{% url 'material_quick_status' material.pk %}" class="d-inline material-status-form">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="next" value="admin_panel">
+                                            <select name="status" class="form-select form-select-sm d-inline w-auto material-status-select custom-status-select status-{{ material.status }}" onchange="this.form.submit()">
+                                                <option value="waiting" {% if material.status == 'waiting' %}selected{% endif %}>Kutish</option>
+                                                <option value="progress" {% if material.status == 'progress' %}selected{% endif %}>Jarayonda</option>
+                                                <option value="completed" {% if material.status == 'completed' %}selected{% endif %}>Tugatilgan</option>
+                                            </select>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <form method="post" action="{% url 'material_quick_mashina' material.pk %}" class="d-inline material-mashina-form">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="next" value="admin_panel">
+                                            <div class="mashina-select-badge">
+                                                <i class="fas fa-cogs text-primary me-1"></i>
+                                                <select name="tikuv_mashina" class="form-select form-select-sm searchable-mashina" onchange="confirmMashinaChange(this)" data-placeholder="To'quv mashina tanlang">
+                                                    {% for mashina in tikuv_mashinalar %}
+                                                        <option value="{{ mashina.pk }}" {% if material.tikuv_mashina.pk == mashina.pk %}selected{% endif %}>
+                                                            {{ mashina.nomi|default:mashina.raqami }}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </form>
+                                    </td>
+                                    <td>{{ material.kiritilgan_vaqt|date:"d.m.Y H:i" }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'material_update' material.pk %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{% url 'material_delete' material.pk %}" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">
+                                        <i class="fas fa-info-circle me-2"></i>Hali materiallar yo'q
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.modern-title {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #1976d2;
+    text-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
+}
+.gradient-btn {
+    background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%) !important;
+    border: none !important;
+    color: #fff !important;
+    font-weight: 600;
+    box-shadow: 0 2px 8px 0 rgba(60,60,60,0.10);
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+.gradient-btn:hover {
+    box-shadow: 0 6px 24px 0 rgba(60,60,60,0.18);
+    transform: translateY(-2px) scale(1.03);
+    color: #fff !important;
+}
+.gradient-btn-blue {
+    background: linear-gradient(90deg, #1976d2 0%, #64b5f6 100%) !important;
+    border: none !important;
+    color: #fff !important;
+    font-weight: 600;
+    box-shadow: 0 2px 8px 0 rgba(25,118,210,0.10);
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+.gradient-btn-blue:hover {
+    box-shadow: 0 6px 24px 0 rgba(25,118,210,0.18);
+    transform: translateY(-2px) scale(1.03);
+    color: #fff !important;
+}
+.stat-card-link {
+    text-decoration: none !important;
+}
+.stat-card {
+    border-radius: 1.2rem;
+    box-shadow: 0 2px 12px 0 rgba(60,60,60,0.08);
+    padding: 1.2rem 1.2rem 1rem 1.2rem;
+    min-height: 110px;
+    transition: box-shadow 0.2s, transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(135deg, #e3f2fd 0%, #fff 100%);
+    border: none;
+}
+.stat-card:hover {
+    box-shadow: 0 6px 24px 0 rgba(60,60,60,0.16);
+    transform: translateY(-2px) scale(1.03);
+}
+.stat-card-users {
+    background: linear-gradient(135deg, #bbdefb 0%, #e3f2fd 100%);
+}
+.stat-card-materials {
+    background: linear-gradient(135deg, #c8e6c9 0%, #e8f5e9 100%);
+}
+.stat-card-machines {
+    background: linear-gradient(135deg, #b2ebf2 0%, #e0f7fa 100%);
+}
+.stat-card-value {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #222;
+    margin-bottom: 0.2rem;
+}
+.stat-card-label {
+    font-size: 1.1rem;
+    color: #555;
+    font-weight: 500;
+}
+.stat-card-icon {
+    font-size: 2.2rem;
+    opacity: 0.7;
+}
+.modern-card {
+    border-radius: 1.2rem;
+    box-shadow: 0 2px 12px 0 rgba(60,60,60,0.08);
+    border: none;
+}
+.modern-table th {
+    background: #f5f5f5 !important;
+    font-weight: 600;
+    font-size: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+.modern-table td {
+    vertical-align: middle;
+    font-size: 0.98rem;
+}
+.custom-status-select {
+    min-width: 120px;
+    border-radius: 8px;
+    border: 1.5px solid #b3b3b3;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    font-weight: 500;
+    background: #f8f9fa;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.custom-status-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 2px #0d6efd33;
+    background: #fff;
+}
+.status-progress {
+    background: #d1e7dd !important;
+    color: #146c43 !important;
+    border-color: #badbcc !important;
+}
+.status-completed {
+    background: #f8d7da !important;
+    color: #842029 !important;
+    border-color: #f5c2c7 !important;
+}
+.status-waiting {
+    background: #f8f9fa !important;
+    color: #333 !important;
+    border-color: #b3b3b3 !important;
+}
+.mashina-select-badge {
+    display: flex;
+    align-items: center;
+    background: #f4f8fb;
+    border: 1.5px solid #1976d2;
+    border-radius: 8px;
+    padding: 2px 8px 2px 6px;
+    box-shadow: 0 1px 4px rgba(25, 118, 210, 0.07);
+    min-width: 120px;
+    max-width: 180px;
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+.mashina-select-badge:focus-within, .mashina-select-badge:hover {
+    border-color: #0d6efd;
+    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.12);
+    background: #e3f2fd;
+}
+.mashina-select-badge .select2-container--default .select2-selection--single {
+    border: none !important;
+    background: transparent !important;
+    font-size: 12px;
+    min-height: 24px;
+}
+.mashina-select-badge .select2-selection__rendered {
+    color: #1976d2 !important;
+    font-weight: 600;
+}
+.mashina-select-badge .select2-selection__arrow {
+    height: 24px !important;
+}
+.mashina-select-badge select {
+    border: none !important;
+    background: transparent !important;
+    font-size: 12px;
+    min-width: 80px;
+    max-width: 140px;
+    padding: 0 2px;
+}
+</style>
+<script>
+document.querySelectorAll('.material-status-select').forEach(function(sel) {
+    sel.addEventListener('change', function() {
+        this.form.submit();
+    });
+});
+
+// To'quv mashina o'zgartirishda alert chiqarish
+function confirmMashinaChange(selectElement) {
+    const form = selectElement.closest('form');
+    const materialId = form.action.split('/').slice(-2, -1)[0];
+    const newMashinaId = selectElement.value;
+    const newMashinaName = selectElement.options[selectElement.selectedIndex].text;
+    
+    if (confirm(`Material #${materialId} uchun to'quv mashinani "${newMashinaName}" ga o'zgartirmoqchimisiz?`)) {
+        form.submit();
+    } else {
+        // Agar bekor qilinsa, oldingi qiymatga qaytarish
+        const originalValue = selectElement.getAttribute('data-original-value');
+        if (originalValue) {
+            selectElement.value = originalValue;
+        }
+        // Select2 ni yangilash
+        $(selectElement).trigger('change');
+    }
+}
+
+// Har bir select element uchun original qiymatni saqlash
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.searchable-mashina').forEach(function(select) {
+        select.setAttribute('data-original-value', select.value);
+    });
+});
+
+$(document).ready(function() {
+    $('.searchable-mashina').select2({
+        width: '120px',
+        placeholder: "To'quv mashina tanlang",
+        allowClear: false
+    });
+});
+</script>
+{% endblock %} 

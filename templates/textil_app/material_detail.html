@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ material.partiya_raqami }} - Textil Boshqaruvi{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-6">
+        <h2>
+            <i class="fas fa-info-circle me-2"></i>Material Ma'lumotlari
+        </h2>
+    </div>
+    <div class="col-md-6 text-end">
+        {% if user.is_superuser or user.is_admin %}
+        <a href="{% url 'material_update' material.pk %}" class="btn btn-warning">
+            <i class="fas fa-edit me-1"></i>Tahrirlash
+        </a>
+        <a href="{% url 'material_delete' material.pk %}" class="btn btn-danger">
+            <i class="fas fa-trash me-1"></i>O'chirish
+        </a>
+        <a href="{% url 'material_pdf' material.pk %}" class="btn btn-outline-danger mb-3" target="_blank">
+            <i class="fas fa-file-pdf"></i> PDF yuklab olish
+        </a>
+        {% endif %}
+        <a href="{% url 'material_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Orqaga
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-tshirt me-2"></i>Asosiy Ma'lumotlar
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Partiya raqami:</strong></td>
+                                <td><span class="badge bg-primary fs-6">{{ material.partiya_raqami }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>To'quv mashina:</strong></td>
+                                <td>{{ material.tikuv_mashina.raqami }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Buyurtmachi:</strong></td>
+                                <td>{{ material.buyurtmachi }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Material nomi:</strong></td>
+                                <td>{{ material.material_turi }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-borderless">
+                            <tr>
+                                <td><strong>Material rangi:</strong></td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ material.material_rangi }}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Material gramaji:</strong></td>
+                                <td><span class="badge bg-info">{{ material.material_gramaji_ko_rsatish }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Kilogramm:</strong></td>
+                                <td><span class="badge bg-info">{{ material.kilogramm }} kg</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Status:</strong></td>
+                                <td>
+                                    {% if material.status == 'waiting' %}
+                                        <span class="badge bg-light text-dark border fs-6">Kutish</span>
+                                    {% elif material.status == 'progress' %}
+                                        <span class="badge bg-success fs-6">Jarayonda</span>
+                                    {% elif material.status == 'completed' %}
+                                        <span class="badge bg-danger fs-6">Tugatilgan</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-clock me-2"></i>Vaqt Ma'lumotlari
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>Kiritilgan vaqt:</strong><br>
+                    <small class="text-muted">{{ material.kiritilgan_vaqt|date:"d.m.Y H:i" }}</small>
+                </div>
+                
+                {% if material.tugatilgan_vaqt %}
+                    <div class="mb-3">
+                        <strong>Tugatilgan vaqt:</strong><br>
+                        <small class="text-muted">{{ material.tugatilgan_vaqt|date:"d.m.Y H:i" }}</small>
+                    </div>
+                    
+                    {% if material.qancha_vaqt_olgan %}
+                        <div class="mb-3">
+                            <strong>Jami vaqt:</strong><br>
+                            <small class="text-muted">
+                                {{ material.qancha_vaqt_olgan.days }} kun, 
+                                {{ material.qancha_soat_olgan }}
+                            </small>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="mb-3">
+                        <strong>Tugatilgan vaqt:</strong><br>
+                        <small class="text-muted">Hali tugatilmagan</small>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if user.is_superuser or user.is_admin %}
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-cogs me-2"></i>Tezkor Amallar
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <form method="post" action="{% url 'material_quick_status' material.pk %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="waiting">
+                            <input type="hidden" name="next" value="material_detail">
+                            <button type="submit" class="btn btn-outline-secondary w-100 mb-2 {% if material.status == 'waiting' %}active{% endif %}">
+                                <i class="fas fa-clock me-1"></i>Kutishga qaytarish
+                            </button>
+                        </form>
+                    </div>
+                    <div class="col-md-4">
+                        <form method="post" action="{% url 'material_quick_status' material.pk %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="progress">
+                            <input type="hidden" name="next" value="material_detail">
+                            <button type="submit" class="btn btn-outline-success w-100 mb-2 {% if material.status == 'progress' %}active{% endif %}">
+                                <i class="fas fa-spinner me-1"></i>Jarayonda
+                            </button>
+                        </form>
+                    </div>
+                    <div class="col-md-4">
+                        <form method="post" action="{% url 'material_quick_status' material.pk %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="completed">
+                            <input type="hidden" name="next" value="material_detail">
+                            <button type="submit" class="btn btn-outline-danger w-100 mb-2 {% if material.status == 'completed' %}active{% endif %}">
+                                <i class="fas fa-check me-1"></i>Tugatildi
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <a href="{% url 'material_update' material.pk %}" class="btn btn-primary w-100 mb-2">
+                    <i class="fas fa-edit me-1"></i>To'liq tahrirlash
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

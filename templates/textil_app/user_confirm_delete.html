@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Foydalanuvchini o'chirish - Textil Boshqaruvi{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Foydalanuvchini o'chirish
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Ogohlantirish!</strong> Bu amalni qaytara olmaysiz.
+                    </div>
+                    
+                    <h5>Quyidagi foydalanuvchini o'chirmoqchimisiz?</h5>
+                    
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Foydalanuvchi nomi:</strong><br>
+                                    {{ user_to_delete.username }}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Ism:</strong><br>
+                                    {{ user_to_delete.first_name|default:"-" }}
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-6">
+                                    <strong>Familiya:</strong><br>
+                                    {{ user_to_delete.last_name|default:"-" }}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Email:</strong><br>
+                                    {{ user_to_delete.email|default:"-" }}
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-6">
+                                    <strong>Admin huquqlari:</strong><br>
+                                    {% if user_to_delete.is_admin %}
+                                        <span class="badge bg-success">Ha</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Yo'q</span>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Ro'yxatdan o'tgan:</strong><br>
+                                    {{ user_to_delete.date_joined|date:"d.m.Y H:i" }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'admin_panel' %}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Bekor qilish
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i>O'chirish
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

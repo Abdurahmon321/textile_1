@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - Textil Boshqaruvi{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="fas fa-edit me-2"></i>{{ title }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <!-- Form xatolari ko'rsatish -->
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.tikuv_mashina.id_for_label }}" class="form-label">
+                                <i class="fas fa-cog me-1"></i>{{ form.tikuv_mashina.label }}
+                            </label>
+                            {{ form.tikuv_mashina }}
+                            {% if form.tikuv_mashina.errors %}
+                                <div class="text-danger small">{{ form.tikuv_mashina.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.buyurtmachi.id_for_label }}" class="form-label">
+                                <i class="fas fa-user me-1"></i>{{ form.buyurtmachi.label }}
+                            </label>
+                            {{ form.buyurtmachi }}
+                            {% if form.buyurtmachi.errors %}
+                                <div class="text-danger small">{{ form.buyurtmachi.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.material_turi.id_for_label }}" class="form-label">
+                                <i class="fas fa-tags me-1"></i>{{ form.material_turi.label }}
+                            </label>
+                            {{ form.material_turi }}
+                            {% if form.material_turi.errors %}
+                                <div class="text-danger small">{{ form.material_turi.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.kilogramm.id_for_label }}" class="form-label">
+                                <i class="fas fa-weight-hanging me-1"></i>{{ form.kilogramm.label }}
+                            </label>
+                            {{ form.kilogramm }}
+                            {% if form.kilogramm.errors %}
+                                <div class="text-danger small">{{ form.kilogramm.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.material_rangi.id_for_label }}" class="form-label">
+                                <i class="fas fa-palette me-1"></i>{{ form.material_rangi.label }}
+                            </label>
+                            {{ form.material_rangi }}
+                            {% if form.material_rangi.errors %}
+                                <div class="text-danger small">{{ form.material_rangi.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="{{ form.material_gramaji_turi.id_for_label }}" class="form-label">
+                                <i class="fas fa-balance-scale me-1"></i>{{ form.material_gramaji_turi.label }}
+                            </label>
+                            {{ form.material_gramaji_turi }}
+                            {% if form.material_gramaji_turi.errors %}
+                                <div class="text-danger small">{{ form.material_gramaji_turi.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="{{ form.material_gramaji.id_for_label }}" class="form-label">
+                                <i class="fas fa-balance-scale me-1"></i>{{ form.material_gramaji.label }}
+                            </label>
+                            {{ form.material_gramaji }}
+                            {% if form.material_gramaji.errors %}
+                                <div class="text-danger small">{{ form.material_gramaji.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.status.id_for_label }}" class="form-label">
+                                <i class="fas fa-info-circle me-1"></i>{{ form.status.label }}
+                            </label>
+                            {{ form.status }}
+                            {% if form.status.errors %}
+                                <div class="text-danger small">{{ form.status.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'material_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Orqaga
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Saqlash
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<!-- jQuery (Select2 uchun kerak) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Barcha select2 klassli selectlar uchun
+        $('select.select2').select2({
+            width: '100%',
+            placeholder: 'Tanlang yoki yozing',
+            allowClear: true,
+        });
+    });
+</script>
+{% endblock %} 

@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}To'quv Mashinalari - Textil Boshqaruvi{% endblock %}
+
+{% block content %}
+<div class="row mb-3 align-items-center">
+    <div class="col-md-6">
+        <h2 class="modern-title">
+            <i class="fas fa-cogs me-2"></i>To'quv Mashinalari Ro'yxati
+        </h2>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{% url 'tikuv_mashina_create' %}" class="btn gradient-btn">
+            <i class="fas fa-plus me-1"></i>Yangi To'quv Mashina
+        </a>
+    </div>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <input type="text" name="search" class="form-control" placeholder="Mashina raqami yoki nomi" value="{{ search|default_if_none:'' }}">
+    </div>
+    <div class="col-auto">
+        <select name="holati" class="form-select">
+            <option value="">Barcha holatlar</option>
+            <option value="active" {% if holati == 'active' %}selected{% endif %}>Faol</option>
+            <option value="inactive" {% if holati == 'inactive' %}selected{% endif %}>Faol emas</option>
+            <option value="repair" {% if holati == 'repair' %}selected{% endif %}>Ta'mirlanmoqda</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-primary">
+            <i class="fas fa-search"></i> Qidirish
+        </button>
+    </div>
+</form>
+
+{% if mashinalar %}
+    <div class="card modern-card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover modern-table">
+                    <thead class="sticky-top bg-light">
+                        <tr>
+                            <th>Raqami</th>
+                            <th>Nomi</th>
+                            <th>Holati</th>
+                            <th>Qo'shilgan vaqt</th>
+                            <th>Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mashina in mashinalar %}
+                        <tr>
+                            <td>
+                                <strong>{{ mashina.raqami }}</strong>
+                            </td>
+                            <td>{{ mashina.nomi|default:"Nomsiz" }}</td>
+                            <td>
+                                {% if mashina.holati == 'active' %}
+                                    <span class="badge bg-success modern-badge">Faol</span>
+                                {% elif mashina.holati == 'inactive' %}
+                                    <span class="badge bg-secondary modern-badge">Faol emas</span>
+                                {% elif mashina.holati == 'repair' %}
+                                    <span class="badge bg-warning modern-badge">Ta'mirlashda</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small>{{ mashina.qo_shilgan_vaqt|date:"d.m.Y" }}</small><br>
+                                <small class="text-muted">{{ mashina.qo_shilgan_vaqt|date:"H:i" }}</small>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'tikuv_mashina_update' mashina.pk %}" class="btn btn-sm btn-outline-warning shadow-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'tikuv_mashina_delete' mashina.pk %}" class="btn btn-sm btn-outline-danger shadow-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="card modern-card">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-cogs fa-4x text-muted mb-3"></i>
+            <h4 class="text-muted">To'quv mashinalari topilmadi</h4>
+            <p class="text-muted">Birinchi to'quv mashinani qo'shish uchun tugmani bosing</p>
+            <a href="{% url 'tikuv_mashina_create' %}" class="btn gradient-btn">
+                <i class="fas fa-plus me-1"></i>To'quv mashina qo'shish
+            </a>
+        </div>
+    </div>
+{% endif %}
+{% endblock %} 

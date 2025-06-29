@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}To'quv Mashinalar Statistikasi{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4"><i class="fas fa-chart-bar me-2"></i>To'quv Mashinalar Statistikasi (so'nggi 7 kun)</h2>
+    <div class="card mb-4">
+        <div class="card-body">
+            <canvas id="barChart" height="100"></canvas>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const stats = {{ stats|safe }};
+const labels = stats.map(s => s.mashina);
+const dataCount = stats.map(s => s.count);
+const dataKg = stats.map(s => s.total_kg);
+
+const ctx = document.getElementById('barChart').getContext('2d');
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: labels,
+        datasets: [
+            {
+                label: 'Tugatilgan materiallar soni',
+                data: dataCount,
+                backgroundColor: 'rgba(25, 118, 210, 0.7)',
+                borderColor: 'rgba(25, 118, 210, 1)',
+                borderWidth: 1
+            },
+            {
+                label: 'Jami kg',
+                data: dataKg,
+                backgroundColor: 'rgba(67, 233, 123, 0.7)',
+                borderColor: 'rgba(67, 233, 123, 1)',
+                borderWidth: 1
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'top' },
+            title: { display: true, text: 'Haftalik To\'quv Mashinalar Statistikasi' }
+        },
+        scales: {
+            y: { beginAtZero: true }
+        }
+    }
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Buyurtmachilar ro'yxati{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h2 class="mb-0"><i class="fas fa-user-tie me-2"></i>Buyurtmachilar ro'yxati</h2>
+            <a href="{% url 'customer_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Yangi Buyurtmachi
+            </a>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12 col-md-6">
+            <form method="get" class="d-flex">
+                <input type="text" name="search" class="form-control me-2" placeholder="Buyurtmachi nomi..." value="{{ search|default:'' }}">
+                <button type="submit" class="btn btn-outline-secondary"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Buyurtmachi nomi</th>
+                                    <th>Telefon</th>
+                                    <th>Email</th>
+                                    <th>Manzil</th>
+                                    <th>Faol</th>
+                                    <th>Qo'shilgan</th>
+                                    <th>Amallar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for customer in customers %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td><span class="badge bg-primary" style="font-size:1rem;">{{ customer.nomi }}</span></td>
+                                    <td>{{ customer.telefon|default:'-' }}</td>
+                                    <td>{{ customer.email|default:'-' }}</td>
+                                    <td>{{ customer.manzil|default:'-' }}</td>
+                                    <td>
+                                        {% if customer.faol %}
+                                            <span class="badge bg-success">Faol</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Faol emas</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ customer.qo_shilgan_vaqt|date:"d.m.Y H:i" }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'customer_update' customer.pk %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></a>
+                                            <a href="{% url 'customer_delete' customer.pk %}" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted">
+                                        <i class="fas fa-info-circle me-2"></i>Hali buyurtmachilar yo'q
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
