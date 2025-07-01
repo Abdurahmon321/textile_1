@@ -86,6 +86,42 @@
                                 </td>
                             </tr>
                         </table>
+                        
+                        <!-- Yangi maydonlar -->
+                        {% if material.ribana_kashkor_turi or material.bayka_turi or material.tup_aen_turi %}
+                        <hr>
+                        <div class="row">
+                            <div class="col-12">
+                                <h6 class="text-muted mb-3">
+                                    <i class="fas fa-plus-circle me-1"></i>Qo'shimcha Materiallar
+                                </h6>
+                            </div>
+                            <div class="col-md-4">
+                                {% if material.ribana_kashkor_turi %}
+                                <div class="mb-2">
+                                    <strong>{{ material.get_ribana_kashkor_turi_display }}:</strong>
+                                    <span class="badge bg-warning">{{ material.ribana_kashkor_kg }} kg</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                {% if material.bayka_turi %}
+                                <div class="mb-2">
+                                    <strong>{{ material.get_bayka_turi_display }}:</strong>
+                                    <span class="badge bg-warning">{{ material.bayka_kg }} kg</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4">
+                                {% if material.tup_aen_turi %}
+                                <div class="mb-2">
+                                    <strong>Tup/AEN:</strong>
+                                    <span class="badge bg-secondary">{{ material.get_tup_aen_turi_display }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>

@@ -56,15 +56,21 @@ class CustomerForm(forms.ModelForm):
 class MaterialForm(forms.ModelForm):
     class Meta:
         model = Material
-        fields = ['tikuv_mashina', 'buyurtmachi', 'material_turi', 'material_rangi', 'material_gramaji_turi', 'material_gramaji', 'kilogramm', 'status']
+        fields = ['tikuv_mashina', 'buyurtmachi', 'material_turi', 'material_rangi', 'material_gramaji_turi', 'material_gramaji', 'kilogramm', 'ribana_kashkor_turi', 'ribana_kashkor_kg', 'bayka_turi', 'bayka_kg', 'tup_aen_turi', 'izoh', 'status']
         widgets = {
             'tikuv_mashina': forms.Select(attrs={'class': 'form-control select2'}),
             'buyurtmachi': forms.Select(attrs={'class': 'form-control select2'}),
             'material_turi': forms.Select(attrs={'class': 'form-control select2'}),
-            'material_rangi': forms.Select(attrs={'class': 'form-control select2'}),
-            'material_gramaji_turi': forms.Select(attrs={'class': 'form-control select2'}),
+            'material_rangi': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Material rangini kiriting'}),
+            'material_gramaji_turi': forms.Select(attrs={'class': 'form-control'}),
             'material_gramaji': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0'}),
             'kilogramm': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0'}),
+            'ribana_kashkor_turi': forms.Select(attrs={'class': 'form-control'}),
+            'ribana_kashkor_kg': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0', 'placeholder': 'Ribana/Kashkor kg'}),
+            'bayka_turi': forms.Select(attrs={'class': 'form-control'}),
+            'bayka_kg': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0', 'placeholder': 'Bayka kg'}),
+            'tup_aen_turi': forms.Select(attrs={'class': 'form-control'}),
+            'izoh': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': "Izoh (ixtiyoriy)"}),
             'status': forms.Select(attrs={'class': 'form-control'}),
         }
     
@@ -73,7 +79,6 @@ class MaterialForm(forms.ModelForm):
         # Faqat faol buyurtmachilar va material turlarini ko'rsatish
         self.fields['buyurtmachi'].queryset = Customer.objects.filter(faol=True)
         self.fields['material_turi'].queryset = MaterialType.objects.filter(faol=True)
-        self.fields['material_rangi'].queryset = Color.objects.filter(faol=True)
         
         # Majburiy maydonlarni belgilash
         self.fields['tikuv_mashina'].required = True
@@ -81,6 +86,18 @@ class MaterialForm(forms.ModelForm):
         self.fields['material_turi'].required = True
         self.fields['material_rangi'].required = True
         self.fields['kilogramm'].required = True
+        
+        # Yangi maydonlar majburiy emas
+        self.fields['ribana_kashkor_turi'].required = False
+        self.fields['ribana_kashkor_kg'].required = False
+        self.fields['bayka_turi'].required = False
+        self.fields['bayka_kg'].required = False
+        self.fields['tup_aen_turi'].required = False
+        
+        # Bo'sh variantlar qo'shish
+        self.fields['ribana_kashkor_turi'].empty_label = "Tanlang..."
+        self.fields['bayka_turi'].empty_label = "Tanlang..."
+        self.fields['tup_aen_turi'].empty_label = "Tanlang..."
     
     def clean(self):
         cleaned_data = super().clean()
@@ -97,6 +114,28 @@ class MaterialForm(forms.ModelForm):
         
         if kilogramm is not None and kilogramm <= 0:
             self.add_error('kilogramm', "Kilogramm 0 dan katta bo'lishi kerak.")
+        
+        # Yangi maydonlar validatsiyasi
+        ribana_kashkor_turi = cleaned_data.get('ribana_kashkor_turi')
+        ribana_kashkor_kg = cleaned_data.get('ribana_kashkor_kg')
+        bayka_turi = cleaned_data.get('bayka_turi')
+        bayka_kg = cleaned_data.get('bayka_kg')
+        
+        # Ribana/Kashkor validatsiyasi
+        if ribana_kashkor_turi and not ribana_kashkor_kg:
+            self.add_error('ribana_kashkor_kg', f"{ribana_kashkor_turi} tanlangan bo'lsa kg kiritish zarur.")
+        elif not ribana_kashkor_turi and ribana_kashkor_kg:
+            self.add_error('ribana_kashkor_turi', "Avval Ribana yoki Kashkor turini tanlang.")
+        elif ribana_kashkor_kg is not None and ribana_kashkor_kg <= 0:
+            self.add_error('ribana_kashkor_kg', "Ribana/Kashkor kg 0 dan katta bo'lishi kerak.")
+        
+        # Bayka validatsiyasi
+        if bayka_turi and not bayka_kg:
+            self.add_error('bayka_kg', "Bayka tanlangan bo'lsa kg kiritish zarur.")
+        elif not bayka_turi and bayka_kg:
+            self.add_error('bayka_turi', "Avval Bayka turini tanlang.")
+        elif bayka_kg is not None and bayka_kg <= 0:
+            self.add_error('bayka_kg', "Bayka kg 0 dan katta bo'lishi kerak.")
         
         return cleaned_data
 

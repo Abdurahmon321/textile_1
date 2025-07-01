@@ -74,6 +74,7 @@
                             <th>Rangi</th>
                             <th>Material gramaji</th>
                             <th>Kilogramm</th>
+                            <th>Qo'shimcha</th>
                             <th>Status</th>
                             <th>Vaqt</th>
                             {% if user.is_superuser or user.is_admin %}
@@ -109,9 +110,36 @@
                                 <span class="badge bg-secondary modern-badge">{{ material.material_rangi }}</span>
                             </td>
                             <td>
-                                <span class="badge bg-info modern-badge">{{ material.material_gramaji_ko_rsatish }}</span>
+                                <span class="badge bg-info modern-badge">
+                                    {{ material.material_gramaji }}
+                                    {% if material.material_gramaji_turi == 'sm' %}sm{% elif material.material_gramaji_turi == 'gram' %}gr{% endif %}
+                                </span>
                             </td>
                             <td>{{ material.kilogramm }} kg</td>
+                            <td>
+                                {% if material.ribana_kashkor_turi or material.bayka_turi or material.tup_aen_turi %}
+                                    {% if material.ribana_kashkor_turi %}
+                                        <span class="badge badge-extra badge-ribana">
+                                            <i class="fas fa-layer-group"></i>
+                                            {{ material.ribana_kashkor_kg }} kg {{ material.get_ribana_kashkor_turi_display }}
+                                        </span>
+                                    {% endif %}
+                                    {% if material.bayka_turi %}
+                                        <span class="badge badge-extra badge-bayka">
+                                            <i class="fas fa-cube"></i>
+                                            {{ material.bayka_kg }} kg {{ material.get_bayka_turi_display }}
+                                        </span>
+                                    {% endif %}
+                                    {% if material.tup_aen_turi %}
+                                        <span class="badge badge-extra badge-tup">
+                                            <i class="fas fa-cubes"></i>
+                                            {{ material.get_tup_aen_turi_display }}
+                                        </span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            </td>
                             <td>
                                 {% if user.is_superuser or user.is_admin %}
                                 <form method="post" action="{% url 'material_quick_status' material.pk %}" class="d-inline material-status-form">
@@ -307,6 +335,23 @@
     max-width: 140px;
     padding: 0 2px;
 }
+.badge-extra {
+    font-size: 0.95em;
+    border-radius: 1.2rem;
+    padding: 0.35em 0.9em;
+    margin-right: 0.3em;
+    margin-bottom: 0.1em;
+    display: inline-block;
+    font-weight: 600;
+}
+.badge-ribana { background: #ffe082; color: #795548; }
+.badge-bayka { background: #ffd54f; color: #6d4c41; }
+.badge-tup { background: #b0bec5; color: #263238; }
+.badge-extra i { margin-right: 0.3em; }
+.table-responsive {
+    /* padding-left: 0px; */
+    /* padding-right: 0px; */
+}
 </style>
 <script>
 document.querySelectorAll('.material-status-select').forEach(function(sel) {
@@ -341,6 +386,21 @@ document.addEventListener('DOMContentLoaded', function() {
         select.setAttribute('data-original-value', select.value);
     });
 });
+
+// PDF yuklab olish scripti olib tashlandi
+document.getElementById('download-pdf-btn').addEventListener('click', function() {
+    const table = document.querySelector('.table-responsive');
+    html2canvas(table, {scale:2}).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new window.jspdf.jsPDF({
+            orientation: 'landscape',
+            unit: 'px',
+            format: [canvas.width, canvas.height]
+        });
+        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+        pdf.save('materiallar_jadvali.pdf');
+    });
+});
 </script>
 {% endblock %}
 
@@ -356,20 +416,6 @@ $(document).ready(function() {
         width: '120px',
         placeholder: "To'quv mashina tanlang",
         allowClear: false
-    });
-});
-
-document.getElementById('download-pdf-btn').addEventListener('click', function() {
-    const table = document.querySelector('.table-responsive');
-    html2canvas(table, {scale:2}).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new window.jspdf.jsPDF({
-            orientation: 'landscape',
-            unit: 'px',
-            format: [canvas.width, canvas.height]
-        });
-        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-        pdf.save('materiallar_jadvali.pdf');
     });
 });
 </script>

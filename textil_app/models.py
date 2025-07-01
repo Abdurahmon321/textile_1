@@ -19,6 +19,20 @@ GRAMMAJ_CHOICES = [
     ('gram', 'Gramm (g)'),
 ]
 
+TUP_AEN_CHOICES = [
+    ('tup', 'Tup'),
+    ('aen', 'AEN'),
+]
+
+RIBANA_KASHKOR_CHOICES = [
+    ('ribana', 'Ribana'),
+    ('kashkor', 'Kashkor'),
+]
+
+BAYKA_CHOICES = [
+    ('bayka', 'Bayka'),
+]
+
 class CustomUser(AbstractUser):
     """Foydalanuvchi modeli"""
     is_admin = models.BooleanField("Admin", default=False)
@@ -115,15 +129,24 @@ class Material(models.Model):
     partiya_raqami = models.PositiveIntegerField("Partiya raqami", unique=True, blank=True, null=True)
     buyurtmachi = models.ForeignKey(Customer, on_delete=models.CASCADE, verbose_name="Buyurtmachi")
     material_turi = models.ForeignKey(MaterialType, on_delete=models.CASCADE, verbose_name="Material turi")
-    material_rangi = models.ForeignKey(Color, on_delete=models.CASCADE, verbose_name="Material rangi")
+    material_rangi = models.CharField("Material rangi", max_length=100, help_text="Material rangini kiriting")
     material_gramaji_turi = models.CharField("Material gramaji turi", max_length=4, choices=GRAMMAJ_CHOICES, default='sm')
     material_gramaji = models.DecimalField("Material gramaji", max_digits=10, decimal_places=2, default=0.00)
     kilogramm = models.DecimalField("Zakaz (kg)", max_digits=10, decimal_places=2)
+    
+    # Yangi maydonlar
+    ribana_kashkor_turi = models.CharField("Ribana/Kashkor turi", max_length=10, choices=RIBANA_KASHKOR_CHOICES, null=True, blank=True, help_text="Ribana yoki Kashkor tanlang")
+    ribana_kashkor_kg = models.DecimalField("Ribana/Kashkor (kg)", max_digits=10, decimal_places=2, null=True, blank=True, help_text="Ribana yoki Kashkor tanlangan bo'lsa kg kiritish zarur")
+    bayka_turi = models.CharField("Bayka turi", max_length=10, choices=BAYKA_CHOICES, null=True, blank=True, help_text="Bayka tanlang")
+    bayka_kg = models.DecimalField("Bayka (kg)", max_digits=10, decimal_places=2, null=True, blank=True, help_text="Bayka tanlangan bo'lsa kg kiritish zarur")
+    tup_aen_turi = models.CharField("Tup/AEN turi", max_length=3, choices=TUP_AEN_CHOICES, null=True, blank=True, help_text="Tup yoki AEN tanlash (majburiy emas)")
+    
     status = models.CharField("Status", max_length=10, choices=STATUS_CHOICES, default='waiting')
     kiritilgan_vaqt = models.DateTimeField("Kutishga qo'yilgan vaqt", default=timezone.now)
     tugatilgan_vaqt = models.DateTimeField("Tugatildi vaqti", null=True, blank=True)
     created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Qo'shgan foydalanuvchi")
     history = HistoricalRecords()
+    izoh = models.TextField("Izoh", blank=True, null=True, help_text="Qo'shimcha izoh yoki eslatma")
 
     def save(self, *args, **kwargs):
         if not self.pk and not self.partiya_raqami:

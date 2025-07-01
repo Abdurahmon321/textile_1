@@ -329,18 +329,50 @@ def export_materials_excel(request):
     ws.title = "Materiallar"
 
     headers = [
-        "ID", "Partiya raqami", "To'quv mashina", "Buyurtmachi", "Material nomi",
-        "Material rangi", "Material gramaji", "Kilogramm", "Status", "Kiritilgan vaqt", "Tugatilgan vaqt"
+        "ID", "Partiya raqami", "To'quv mashina", "Buyurtmachi", "Buyurtmachi tel", "Buyurtmachi email", "Material nomi",
+        "Material rangi", "Material gramaji", "Kilogramm", "Ribana/Kashkor", "Bayka", "Tup/AEN", "Izoh", "Status", "Kiritilgan vaqt", "Tugatilgan vaqt"
     ]
     ws.append(headers)
 
     for m in qs:
-        tikuv_mashina_nomi = m.tikuv_mashina.nomi if m.tikuv_mashina.nomi else m.tikuv_mashina.raqami
+        tikuv_mashina_nomi = m.tikuv_mashina.nomi if hasattr(m.tikuv_mashina, 'nomi') and m.tikuv_mashina.nomi else m.tikuv_mashina.raqami
         kiritilgan_vaqt = timezone.localtime(m.kiritilgan_vaqt).strftime('%d.%m.%Y %H:%M') if m.kiritilgan_vaqt else ''
         tugatilgan_vaqt = timezone.localtime(m.tugatilgan_vaqt).strftime('%d.%m.%Y %H:%M') if m.tugatilgan_vaqt else ''
+        buyurtmachi_nomi = m.buyurtmachi.nomi if hasattr(m.buyurtmachi, 'nomi') else str(m.buyurtmachi)
+        buyurtmachi_tel = getattr(m.buyurtmachi, 'telefon', None) or '—'
+        buyurtmachi_email = getattr(m.buyurtmachi, 'email', None) or '—'
+        material_turi = m.material_turi.nomi if hasattr(m.material_turi, 'nomi') else str(m.material_turi)
+        material_rangi = m.material_rangi or '—'
+        izoh = m.izoh or ''
+        # Qo'shimcha maydonlar
+        if hasattr(m, 'ribana_kashkor_turi') and m.ribana_kashkor_turi and hasattr(m, 'ribana_kashkor_kg') and m.ribana_kashkor_kg:
+            ribana_kashkor = f"{m.get_ribana_kashkor_turi_display()} (kg): {m.ribana_kashkor_kg}"
+        else:
+            ribana_kashkor = "—"
+        if hasattr(m, 'bayka_turi') and m.bayka_turi and hasattr(m, 'bayka_kg') and m.bayka_kg:
+            bayka = f"{m.get_bayka_turi_display()} (kg): {m.bayka_kg}"
+        else:
+            bayka = "—"
+        if hasattr(m, 'tup_aen_turi') and m.tup_aen_turi:
+            tup_aen = m.get_tup_aen_turi_display()
+        else:
+            tup_aen = "—"
         ws.append([
-            m.id, m.partiya_raqami, tikuv_mashina_nomi, m.buyurtmachi.nomi, m.material_turi.nomi,
-            m.material_rangi.nomi, m.material_gramaji_ko_rsatish, float(m.kilogramm), m.get_status_display(),
+            m.id,
+            m.partiya_raqami,
+            tikuv_mashina_nomi,
+            buyurtmachi_nomi,
+            buyurtmachi_tel,
+            buyurtmachi_email,
+            material_turi,
+            material_rangi,
+            m.material_gramaji_ko_rsatish,
+            float(m.kilogramm),
+            ribana_kashkor,
+            bayka,
+            tup_aen,
+            izoh,
+            m.get_status_display(),
             kiritilgan_vaqt,
             tugatilgan_vaqt
         ])
@@ -404,7 +436,22 @@ def material_pdf(request, pk):
     p.drawCentredString(width / 2, height - 40, "Material Ma'lumotlari")
     p.setFillColor(colors.black)
 
-    # Jadval uchun ma'lumotlar
+    # Qo'shimcha maydonlar uchun qiymatlar
+    if material.ribana_kashkor_turi and material.ribana_kashkor_kg:
+        ribana_kashkor_str = f"{material.get_ribana_kashkor_turi_display()} (kg): {material.ribana_kashkor_kg}"
+    else:
+        ribana_kashkor_str = "—"
+    if material.bayka_turi and material.bayka_kg:
+        bayka_str = f"{material.get_bayka_turi_display()} (kg): {material.bayka_kg}"
+    else:
+        bayka_str = "—"
+    if material.tup_aen_turi:
+        tup_aen_str = material.get_tup_aen_turi_display()
+    else:
+        tup_aen_str = "—"
+    customer_tel = material.buyurtmachi.telefon or "—"
+    customer_email = material.buyurtmachi.email or "—"
+
     tikuv_mashina_nomi = material.tikuv_mashina.nomi if material.tikuv_mashina.nomi else material.tikuv_mashina.raqami
     kiritilgan_vaqt = timezone.localtime(material.kiritilgan_vaqt).strftime('%d.%m.%Y %H:%M') if material.kiritilgan_vaqt else ''
     tugatilgan_vaqt = timezone.localtime(material.tugatilgan_vaqt).strftime('%d.%m.%Y %H:%M') if material.tugatilgan_vaqt else 'Hali tugatilmagan'
@@ -412,10 +459,15 @@ def material_pdf(request, pk):
         ["Partiya raqami", material.partiya_raqami],
         ["To'quv mashina", tikuv_mashina_nomi],
         ["Buyurtmachi", material.buyurtmachi],
+        ["Buyurtmachi tel", customer_tel],
+        ["Buyurtmachi email", customer_email],
         ["Material nomi", material.material_turi],
         ["Material rangi", material.material_rangi],
         ["Material gramaji", material.material_gramaji_ko_rsatish],
         ["Kilogramm", f"{material.kilogramm} kg"],
+        ["Ribana/Kashkor", ribana_kashkor_str],
+        ["Bayka", bayka_str],
+        ["Tup/AEN", tup_aen_str],
         ["Status", material.get_status_display()],
         ["Kiritilgan vaqt", kiritilgan_vaqt],
         ["Tugatilgan vaqt", tugatilgan_vaqt],
@@ -435,10 +487,10 @@ def material_pdf(request, pk):
     ]))
 
     table.wrapOn(p, width, height)
-    table.drawOn(p, 50, height - 320)
+    table.drawOn(p, 50, height - 420)
 
     # Mas'ul shaxs uchun joy
-    y = height - 340 - len(data)*18
+    y = height - 440 - len(data)*18
     p.setFont("Helvetica-Bold", 12)
     p.drawString(50, y, "Mas'ul shaxs:")
     p.line(130, y-2, 350, y-2)

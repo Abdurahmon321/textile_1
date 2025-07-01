@@ -3,31 +3,18 @@
 {% block title %}{{ title }} - Textil Boshqaruvi{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h4 class="mb-0">
-                    <i class="fas fa-edit me-2"></i>{{ title }}
-                </h4>
-            </div>
-            <div class="card-body">
-                <!-- Form xatolari ko'rsatish -->
-                {% if form.non_field_errors %}
-                    <div class="alert alert-danger">
-                        <ul class="mb-0">
-                            {% for error in form.non_field_errors %}
-                                <li>{{ error }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% endif %}
-                
-                <form method="post">
-                    {% csrf_token %}
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
+<form method="post">
+    {% csrf_token %}
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-9">
+            <!-- Asosiy ma'lumotlar -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-info-circle me-2"></i>Asosiy ma'lumotlar
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
                             <label for="{{ form.tikuv_mashina.id_for_label }}" class="form-label">
                                 <i class="fas fa-cog me-1"></i>{{ form.tikuv_mashina.label }}
                             </label>
@@ -36,7 +23,7 @@
                                 <div class="text-danger small">{{ form.tikuv_mashina.errors.0 }}</div>
                             {% endif %}
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                             <label for="{{ form.buyurtmachi.id_for_label }}" class="form-label">
                                 <i class="fas fa-user me-1"></i>{{ form.buyurtmachi.label }}
                             </label>
@@ -45,10 +32,7 @@
                                 <div class="text-danger small">{{ form.buyurtmachi.errors.0 }}</div>
                             {% endif %}
                         </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                             <label for="{{ form.material_turi.id_for_label }}" class="form-label">
                                 <i class="fas fa-tags me-1"></i>{{ form.material_turi.label }}
                             </label>
@@ -57,7 +41,7 @@
                                 <div class="text-danger small">{{ form.material_turi.errors.0 }}</div>
                             {% endif %}
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                             <label for="{{ form.kilogramm.id_for_label }}" class="form-label">
                                 <i class="fas fa-weight-hanging me-1"></i>{{ form.kilogramm.label }}
                             </label>
@@ -66,10 +50,7 @@
                                 <div class="text-danger small">{{ form.kilogramm.errors.0 }}</div>
                             {% endif %}
                         </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                             <label for="{{ form.material_rangi.id_for_label }}" class="form-label">
                                 <i class="fas fa-palette me-1"></i>{{ form.material_rangi.label }}
                             </label>
@@ -77,8 +58,9 @@
                             {% if form.material_rangi.errors %}
                                 <div class="text-danger small">{{ form.material_rangi.errors.0 }}</div>
                             {% endif %}
+                            <small class="form-text text-muted">{{ form.material_rangi.help_text }}</small>
                         </div>
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-3">
                             <label for="{{ form.material_gramaji_turi.id_for_label }}" class="form-label">
                                 <i class="fas fa-balance-scale me-1"></i>{{ form.material_gramaji_turi.label }}
                             </label>
@@ -87,7 +69,7 @@
                                 <div class="text-danger small">{{ form.material_gramaji_turi.errors.0 }}</div>
                             {% endif %}
                         </div>
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-3">
                             <label for="{{ form.material_gramaji.id_for_label }}" class="form-label">
                                 <i class="fas fa-balance-scale me-1"></i>{{ form.material_gramaji.label }}
                             </label>
@@ -97,9 +79,88 @@
                             {% endif %}
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
+            <!-- Qo'shimcha ma'lumotlar -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-plus-circle me-2"></i>Qo'shimcha ma'lumotlar
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="{{ form.ribana_kashkor_turi.id_for_label }}" class="form-label">
+                                <i class="fas fa-tag me-1"></i>{{ form.ribana_kashkor_turi.label }}
+                            </label>
+                            {{ form.ribana_kashkor_turi }}
+                            {% if form.ribana_kashkor_turi.errors %}
+                                <div class="text-danger small">{{ form.ribana_kashkor_turi.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">{{ form.ribana_kashkor_turi.help_text }}</small>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.ribana_kashkor_kg.id_for_label }}" class="form-label">
+                                <i class="fas fa-weight-hanging me-1"></i>{{ form.ribana_kashkor_kg.label }}
+                            </label>
+                            {{ form.ribana_kashkor_kg }}
+                            {% if form.ribana_kashkor_kg.errors %}
+                                <div class="text-danger small">{{ form.ribana_kashkor_kg.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">{{ form.ribana_kashkor_kg.help_text }}</small>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.tup_aen_turi.id_for_label }}" class="form-label">
+                                <i class="fas fa-tag me-1"></i>{{ form.tup_aen_turi.label }}
+                            </label>
+                            {{ form.tup_aen_turi }}
+                            {% if form.tup_aen_turi.errors %}
+                                <div class="text-danger small">{{ form.tup_aen_turi.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">{{ form.tup_aen_turi.help_text }}</small>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.bayka_turi.id_for_label }}" class="form-label">
+                                <i class="fas fa-tag me-1"></i>{{ form.bayka_turi.label }}
+                            </label>
+                            {{ form.bayka_turi }}
+                            {% if form.bayka_turi.errors %}
+                                <div class="text-danger small">{{ form.bayka_turi.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">{{ form.bayka_turi.help_text }}</small>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.bayka_kg.id_for_label }}" class="form-label">
+                                <i class="fas fa-weight-hanging me-1"></i>{{ form.bayka_kg.label }}
+                            </label>
+                            {{ form.bayka_kg }}
+                            {% if form.bayka_kg.errors %}
+                                <div class="text-danger small">{{ form.bayka_kg.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">{{ form.bayka_kg.help_text }}</small>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.izoh.id_for_label }}" class="form-label">
+                                <i class="fas fa-comment-dots me-1"></i>{{ form.izoh.label }}
+                            </label>
+                            {{ form.izoh }}
+                            {% if form.izoh.errors %}
+                                <div class="text-danger small">{{ form.izoh.errors.0 }}</div>
+                            {% endif %}
+                            <small class="form-text text-muted">{{ form.izoh.help_text }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status va saqlash -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <i class="fas fa-cog me-2"></i>Status va saqlash
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
                             <label for="{{ form.status.id_for_label }}" class="form-label">
                                 <i class="fas fa-info-circle me-1"></i>{{ form.status.label }}
                             </label>
@@ -109,8 +170,7 @@
                             {% endif %}
                         </div>
                     </div>
-
-                    <div class="d-flex justify-content-between">
+                    <div class="d-flex justify-content-between mt-4">
                         <a href="{% url 'material_list' %}" class="btn btn-secondary">
                             <i class="fas fa-arrow-left me-1"></i>Orqaga
                         </a>
@@ -118,28 +178,24 @@
                             <i class="fas fa-save me-1"></i>Saqlash
                         </button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</form>
 {% endblock %}
 
 {% block extra_js %}
-<!-- Select2 CSS -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<!-- jQuery (Select2 uchun kerak) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Select2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-    $(document).ready(function() {
-        // Barcha select2 klassli selectlar uchun
-        $('select.select2').select2({
-            width: '100%',
-            placeholder: 'Tanlang yoki yozing',
-            allowClear: true,
-        });
+$(document).ready(function() {
+    $('select.select2').select2({
+        width: '100%',
+        placeholder: 'Tanlang yoki yozing',
+        allowClear: true,
     });
+});
 </script>
 {% endblock %} 

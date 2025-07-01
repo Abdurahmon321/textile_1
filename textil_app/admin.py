@@ -107,8 +107,8 @@ class TikuvMashinaAdmin(admin.ModelAdmin):
 
 class MaterialAdmin(SimpleHistoryAdmin):
     list_display = ('partiya_raqami', 'tikuv_mashina', 'buyurtmachi', 'material_turi', 'material_rangi', 'status', 'kiritilgan_vaqt', 'created_by')
-    list_filter = ('status', 'kiritilgan_vaqt', 'material_rangi', 'material_gramaji_turi', 'tikuv_mashina', 'material_turi')
-    search_fields = ('partiya_raqami', 'buyurtmachi__nomi', 'material_turi__nomi')
+    list_filter = ('status', 'kiritilgan_vaqt', 'material_gramaji_turi', 'tikuv_mashina', 'material_turi', 'tup_aen_turi', 'ribana_kashkor_turi', 'bayka_turi')
+    search_fields = ('partiya_raqami', 'buyurtmachi__nomi', 'material_turi__nomi', 'material_rangi')
     ordering = ('-kiritilgan_vaqt',)
     readonly_fields = ('partiya_raqami', 'kiritilgan_vaqt', 'created_by')
     fieldsets = (
@@ -117,6 +117,10 @@ class MaterialAdmin(SimpleHistoryAdmin):
         }),
         ('Material ma\'lumotlari', {
             'fields': ('material_turi', 'material_rangi', 'material_gramaji_turi', 'material_gramaji', 'kilogramm')
+        }),
+        ('Qo\'shimcha materiallar', {
+            'fields': ('ribana_kashkor_turi', 'ribana_kashkor_kg', 'bayka_turi', 'bayka_kg', 'tup_aen_turi'),
+            'classes': ('collapse',)
         }),
         ('Status va vaqt', {
             'fields': ('status', 'kiritilgan_vaqt', 'tugatilgan_vaqt')
